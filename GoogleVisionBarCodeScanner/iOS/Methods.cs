@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AVFoundation;
@@ -163,10 +164,12 @@ namespace GoogleVisionBarCodeScanner
             List<BarcodeResult> resultList = new List<BarcodeResult>();
             foreach (var barcode in barcodes)
             {
+                var points = barcode.CornerPoints.ToList().ConvertAll(nsvalue => nsvalue.PointFValue);
                 resultList.Add(new BarcodeResult
                 {
                     BarcodeType = Methods.ConvertBarcodeResultTypes(barcode.ValueType),
-                    DisplayValue = barcode.DisplayValue
+                    DisplayValue = barcode.DisplayValue,
+                    Points = points.Select(p => (p.X / (double)image.Size.Width, p.Y / (double)image.Size.Height) ).ToList()
                 });
             }
             return resultList;

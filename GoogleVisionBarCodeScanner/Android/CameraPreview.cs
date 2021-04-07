@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Gms.Vision;
@@ -183,7 +184,8 @@ namespace GoogleVisionBarCodeScanner
                             barcodeResults.Add(new BarcodeResult
                             {
                                 BarcodeType = type,
-                                DisplayValue = value
+                                DisplayValue = value,
+                                Points = barcode.CornerPoints.Select(p => (p.X / (double)detections.FrameMetadata.Width, p.Y / (double)detections.FrameMetadata.Height)).ToList()
                             });
                         }
                         OnDetected?.Invoke(barcodeResults);

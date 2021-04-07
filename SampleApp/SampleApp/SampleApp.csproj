@@ -30,4 +30,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GoogleVisionBarCodeScanner\GoogleVisionBarCodeScanner.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Page4.xaml.cs">
+      <DependentUpon>Page4.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

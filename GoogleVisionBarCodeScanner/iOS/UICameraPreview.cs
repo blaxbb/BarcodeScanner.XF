@@ -171,6 +171,10 @@ namespace GoogleVisionBarCodeScanner
             int scanIntervalInMs = 1000;
             long lastAnalysisTime = DateTimeOffset.MinValue.ToUnixTimeMilliseconds();
             long lastRunTime = DateTimeOffset.MinValue.ToUnixTimeMilliseconds();
+
+            float Width;
+            float Height;
+
             public CaptureVideoDelegate(bool vibrationOnDetected)
             {
                 _vibrationOnDetected = vibrationOnDetected;
@@ -263,6 +267,8 @@ namespace GoogleVisionBarCodeScanner
                     {
                         var image = GetImageFromSampleBuffer(sampleBuffer);
                         if (image == null) return;
+                        Width = (float)image.Size.Width;
+                        Height = (float)image.Size.Height;
                         var visionImage = new VisionImage(image) { Metadata = metadata };
                         releaseSampleBuffer(sampleBuffer);
                         DetectBarcodeActionAsync(visionImage);
@@ -276,7 +282,6 @@ namespace GoogleVisionBarCodeScanner
             }
             private async void DetectBarcodeActionAsync(VisionImage image)
             {
-
                 if (Configuration.IsScanning)
                 {
                     try
@@ -291,12 +296,16 @@ namespace GoogleVisionBarCodeScanner
                         if (_vibrationOnDetected)
                             SystemSound.Vibrate.PlayAlertSound();
                         List<BarcodeResult> resultList = new List<BarcodeResult>();
+
                         foreach (var barcode in barcodes)
                         {
+                            var points = barcode.CornerPoints.ToList().ConvertAll(nsvalue => nsvalue.PointFValue);
+
                             resultList.Add(new BarcodeResult
                             {
                                 BarcodeType = Methods.ConvertBarcodeResultTypes(barcode.ValueType),
-                                DisplayValue = barcode.DisplayValue
+                                DisplayValue = barcode.DisplayValue,
+                                Points = points.Select(p => (p.X / (double)Width, p.Y / (double)Height)).ToList()
                             });
                         }
                         OnDetected?.Invoke(resultList);

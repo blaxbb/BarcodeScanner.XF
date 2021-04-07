@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.Gms.Vision;
 using Android.Gms.Vision.Barcodes;
@@ -184,10 +185,12 @@ namespace GoogleVisionBarCodeScanner
                 Barcode barcode = qrcodes.ValueAt(i) as Barcode;
                 var type = Methods.ConvertBarcodeResultTypes(barcode.ValueFormat);
                 var value = barcode.DisplayValue;
+
                 barcodeResults.Add(new BarcodeResult
                 {
                     BarcodeType = type,
-                    DisplayValue = value
+                    DisplayValue = value,
+                    Points = barcode.CornerPoints.Select(p => (p.X / (double)bitmap.Width, p.Y / (double)bitmap.Height)).ToList()
                 });
             }
             return barcodeResults;
