@@ -13,7 +13,7 @@
 		<Product></Product>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<AssemblyFileVersion>1.0.0.0</AssemblyFileVersion>
-		<Version>5.0.2</Version>
+		<Version>5.0.4</Version>
 		<NeutralLanguage>en</NeutralLanguage>
 
 
@@ -28,16 +28,18 @@
 		<!--Version of C# to use -->
 		<LangVersion>default</LangVersion>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Authors>Jimmy Pun</Authors>
+		<Authors>Brian Barrett</Authors>
 		<Description>Powerful Xamarin Forms barcode scanning library using GoogleVision API for Android and iOS.</Description>
 		<PackageIconUrl>https://banner2.kisspng.com/20180713/olo/kisspng-nuget-net-framework-package-manager-software-repo-nuget-5b487dc3ba81a7.452233091531477443764.jpg</PackageIconUrl>
-		<RepositoryUrl>https://github.com/JimmyPun610/BarcodeScanner.XF</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/JimmyPun610/BarcodeScanner.XF</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/blaxbb/BarcodeScanner.XF</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/blaxbb/BarcodeScanner.XF</PackageProjectUrl>
 		<PackageLicenseUrl>https://github.com/JimmyPun610/BarcodeScanner.XF</PackageLicenseUrl>
 		<RepositoryType></RepositoryType>
 		<PackageTags>Xamarin.Forms Barcode Scanning Tools</PackageTags>
 		<PackageReleaseNotes>1. Fixing Git issue 54, PRSIM support</PackageReleaseNotes>
 		<Copyright>Copyright 2021</Copyright>
+		<PackageId>BarcodeScanner.XF.Realtime</PackageId>
+		<Company>Brian Barrett</Company>
 
 	</PropertyGroup>
 
@@ -126,6 +128,50 @@
 		</PackageReference>
 		<PackageReference Include="Xamarin.Firebase.iOS.MLKit.Common" Version="0.21.0">
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid10.0'">
+	  <PackageReference Include="Xamarin.AndroidX.Core">
+	    <Version>1.6.0.1</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.AndroidX.CustomView">
+	    <Version>1.1.0.7</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.AndroidX.Preference">
+	    <Version>1.1.1.9</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.AndroidX.RecyclerView">
+	    <Version>1.2.1.1</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.GooglePlayServices.MLKit.Text.Recognition">
+	    <Version>116.2.0</Version>
+	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid11.0'">
+	  <PackageReference Include="Xamarin.AndroidX.Core">
+	    <Version>1.6.0.1</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.AndroidX.CustomView">
+	    <Version>1.1.0.7</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.AndroidX.Preference">
+	    <Version>1.1.1.9</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.AndroidX.RecyclerView">
+	    <Version>1.2.1.1</Version>
+	  </PackageReference>
+	  <PackageReference Include="Xamarin.GooglePlayServices.MLKit.Text.Recognition">
+	    <Version>116.2.0</Version>
+	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Shared\TextResult.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Shared\IScanResult.cs" />
 	</ItemGroup>
 	
    

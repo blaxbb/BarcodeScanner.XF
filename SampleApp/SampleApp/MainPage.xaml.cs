@@ -74,7 +74,7 @@ namespace SampleApp
                     string result = string.Empty;
                     for (int i = 0; i < obj.Count; i++)
                     {
-                        result += $"Type : {obj[i].BarcodeType}, Value : {obj[i].DisplayValue}{Environment.NewLine}";
+                        result += $"Type : {obj[i].BarcodeType}, Value : {obj[i].Value}{Environment.NewLine}";
                     }
                     Device.BeginInvokeOnMainThread(async () =>
                     {

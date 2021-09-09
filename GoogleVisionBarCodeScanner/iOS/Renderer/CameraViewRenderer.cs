@@ -26,7 +26,7 @@ namespace GoogleVisionBarCodeScanner.Renderer
                     SetNativeControl(liveCameraStream);
                     liveCameraStream.OnDetected += (list) =>
                     {
-                        cameraView?.TriggerOnDetected(list);
+                        cameraView?.TriggerOnBarcodeDetected(list);
                     };
 
 

@@ -189,7 +189,7 @@ namespace GoogleVisionBarCodeScanner
                 barcodeResults.Add(new BarcodeResult
                 {
                     BarcodeType = type,
-                    DisplayValue = value,
+                    Value = value,
                     Points = barcode.CornerPoints.Select(p => (p.X / (double)bitmap.Width, p.Y / (double)bitmap.Height)).ToList()
                 });
             }

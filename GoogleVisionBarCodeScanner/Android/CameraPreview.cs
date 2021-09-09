@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Android.Content;
 using Android.Gms.Vision;
 using Android.Gms.Vision.Barcodes;
+using Android.Gms.Vision.Texts;
 using Android.Graphics;
 using Android.OS;
 using Android.Runtime;
@@ -19,7 +20,8 @@ namespace GoogleVisionBarCodeScanner
         private readonly CameraSource _cameraSource;
         private readonly SurfaceView _surfaceView;
         private readonly IWindowManager _windowManager;
-        public event Action<List<BarcodeResult>> OnDetected;
+        public event Action<List<BarcodeResult>> OnBarcodeDetected;
+        public event Action<List<TextResult>> OnTextDetected;
 
         protected override void OnDetachedFromWindow()
         {
@@ -38,34 +40,57 @@ namespace GoogleVisionBarCodeScanner
             _barcodeDetector = new BarcodeDetector.Builder(context)
                .SetBarcodeFormats(Configuration.BarcodeFormats)
                .Build();
+
+            var textDetector = new TextRecognizer.Builder(context)
+                .Build();
+
+            var multiDetector = new MultiDetector.Builder()
+                .Add(textDetector)
+                .Add(_barcodeDetector)
+                .Build();
+
             if(requestedFPS == null)
             {
                 _cameraSource = new CameraSource
-                .Builder(context, _barcodeDetector)
-                .SetRequestedPreviewSize(1280, 720)
-                .SetAutoFocusEnabled(true)
-                .Build();
+                    .Builder(context, multiDetector)
+                    .SetRequestedPreviewSize(1280, 720)
+                    .SetAutoFocusEnabled(true)
+                    .Build();
             }
             else
             {
-                _cameraSource = new CameraSource
-                .Builder(context, _barcodeDetector)
-                .SetRequestedPreviewSize(1280, 720)
-                .SetAutoFocusEnabled(true)
-                .SetRequestedFps(requestedFPS.Value)
-                .Build();
+                _cameraSource = new CameraSource.Builder(context, multiDetector)
+                    .SetRequestedPreviewSize(1280, 720)
+                    .SetAutoFocusEnabled(true)
+                    .SetRequestedFps(requestedFPS.Value)
+                    .Build();
             }
             
-            Configuration.CameraSource = _cameraSource;
+            Configuration.CameraSource = _cameraSource; 
             _surfaceView = new SurfaceView(context);
             _surfaceView.Holder.AddCallback(new SurfaceHolderCallback(_cameraSource, _surfaceView));
             AddView(_surfaceView);
 
+            var textProcessor = new TextDetectorProcessor(context, virbationOnDetected);
+            textProcessor.OnDetected += TextProcessor_OnDetected;
+            textDetector.SetProcessor(textProcessor);
+
             var detectProcessor = new DetectorProcessor(context, virbationOnDetected);
             detectProcessor.OnDetected += DetectProcessor_OnDetected;
             _barcodeDetector.SetProcessor(detectProcessor);
+
             if (defaultTorchOn)
                 AutoSwitchOnTorch();
+        }
+
+        private void DetectProcessor_OnDetected(List<BarcodeResult> obj)
+        {
+            OnBarcodeDetected?.Invoke(obj);
+        }
+
+        private void TextProcessor_OnDetected(List<TextResult> obj)
+        {
+            OnTextDetected?.Invoke(obj);
         }
 
         private static void AutoSwitchOnTorch()
@@ -109,11 +134,6 @@ namespace GoogleVisionBarCodeScanner
             }, ct);
         }
 
-        private void DetectProcessor_OnDetected(List<BarcodeResult> obj)
-        {
-            OnDetected?.Invoke(obj);
-
-        }
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
@@ -178,13 +198,14 @@ namespace GoogleVisionBarCodeScanner
                         for (int i = 0; i < qrcodes.Size(); i++)
                         {
                             Barcode barcode = qrcodes.ValueAt(i) as Barcode;
+
                             if (barcode == null) continue;
                             var type = Methods.ConvertBarcodeResultTypes(barcode.ValueFormat);
                             var value = barcode.DisplayValue;
                             barcodeResults.Add(new BarcodeResult
                             {
                                 BarcodeType = type,
-                                DisplayValue = value,
+                                Value = value,
                                 Points = barcode.CornerPoints.Select(p => (p.X / (double)detections.FrameMetadata.Width, p.Y / (double)detections.FrameMetadata.Height)).ToList()
                             });
                         }
@@ -197,6 +218,54 @@ namespace GoogleVisionBarCodeScanner
             {
             }
         }
+
+        private class TextDetectorProcessor : Java.Lang.Object, Detector.IProcessor
+        {
+            public event Action<List<TextResult>> OnDetected;
+            private readonly Context _context;
+            private readonly bool _vibrationOnDetected;
+
+            public TextDetectorProcessor(Context context, bool vibrationOnDetected)
+            {
+                _context = context;
+                _vibrationOnDetected = vibrationOnDetected;
+            }
+
+            public void ReceiveDetections(Detector.Detections detections)
+            {
+                var textBlocks = detections.DetectedItems;
+                if (textBlocks.Size() != 0)
+                {
+                    if (Configuration.IsScanning)
+                    {
+                        Configuration.IsScanning = false;
+                        if (_vibrationOnDetected)
+                        {
+                            Vibrator vib = (Vibrator)_context.GetSystemService(Context.VibratorService);
+                            vib.Vibrate(200);
+                        }
+                        var results = new List<TextResult>();
+                        for (int i = 0; i < textBlocks.Size(); i++)
+                        {
+                            var block = textBlocks.ValueAt(i) as TextBlock;
+                            if (block == null) continue;
+                            
+                            results.Add(new TextResult
+                            {
+                                Value = block.Value,
+                                Points = new List<(double x, double y)>() { (block.BoundingBox.CenterX() / (double)detections.FrameMetadata.Width, block.BoundingBox.CenterY() / (double)detections.FrameMetadata.Height), }
+                            });
+                        }
+                        OnDetected?.Invoke(results);
+                    }
+                }
+            }
+
+            public void Release()
+            {
+            }
+        }
+
 
         private class SurfaceHolderCallback : Java.Lang.Object, ISurfaceHolderCallback
         {

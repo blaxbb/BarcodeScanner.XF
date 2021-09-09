@@ -64,22 +64,40 @@ namespace GoogleVisionBarCodeScanner
         }
 
 
-        public event EventHandler<OnDetectedEventArg> OnDetected;
-        public void TriggerOnDetected(List<BarcodeResult> barCodeResults)
+        public event EventHandler<OnBarcodeDetectedEventArg> OnBarcodeDetected;
+        public void TriggerOnBarcodeDetected(List<BarcodeResult> barCodeResults)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                OnDetected?.Invoke(this, new OnDetectedEventArg { BarcodeResults = barCodeResults });
+                OnBarcodeDetected?.Invoke(this, new OnBarcodeDetectedEventArg { BarcodeResults = barCodeResults });
+            });
+        }
+
+        public event EventHandler<OnTextDetectedEventArg> OnTextDetected;
+        public void TriggerOnTextDetected(List<TextResult> textResults)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                OnTextDetected?.Invoke(this, new OnTextDetectedEventArg { TextResults = textResults });
             });
         }
     }
     
-    public class OnDetectedEventArg : EventArgs
+    public class OnBarcodeDetectedEventArg : EventArgs
     {
         public List<BarcodeResult> BarcodeResults { get; set; }
-        public OnDetectedEventArg()
+        public OnBarcodeDetectedEventArg()
         {
             BarcodeResults = new List<BarcodeResult>();
+        }
+    }
+
+    public class OnTextDetectedEventArg : EventArgs
+    {
+        public List<TextResult> TextResults { get; set; }
+        public OnTextDetectedEventArg()
+        {
+            TextResults = new List<TextResult>();
         }
     }
 }

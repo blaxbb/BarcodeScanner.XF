@@ -20,7 +20,7 @@
                 <Button x:Name="FlashlightButton" Text="Flashlight" BackgroundColor="#0075FF" TextColor="White" Clicked="FlashlightButton_Clicked" HorizontalOptions="EndAndExpand"
                         WidthRequest="150" CornerRadius="0"/>
             </StackLayout>
-            <gv:CameraView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" OnDetected="CameraView_OnDetected" Grid.Row="1"
+            <gv:CameraView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" OnBarcodeDetected="CameraView_OnBarcodeDetected" OnTextDetected="CameraView_OnTextDetected" Grid.Row="1"
                            DefaultTorchOn="False" VibrationOnDetected="False"/>
             <Label Text="Scan QRCode" FontSize="Medium" HorizontalOptions="FillAndExpand" HorizontalTextAlignment="Center" Grid.Row="2"
                    TextColor="Red"/>

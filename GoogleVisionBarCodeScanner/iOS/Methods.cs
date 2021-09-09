@@ -168,7 +168,7 @@ namespace GoogleVisionBarCodeScanner
                 resultList.Add(new BarcodeResult
                 {
                     BarcodeType = Methods.ConvertBarcodeResultTypes(barcode.ValueType),
-                    DisplayValue = barcode.DisplayValue,
+                    Value = barcode.DisplayValue,
                     Points = points.Select(p => (p.X / (double)image.Size.Width, p.Y / (double)image.Size.Height) ).ToList()
                 });
             }

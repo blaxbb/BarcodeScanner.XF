@@ -33,14 +33,14 @@ namespace SampleApp
             GoogleVisionBarCodeScanner.Methods.ToggleFlashlight();
         }
 
-        private async void CameraView_OnDetected(object sender, GoogleVisionBarCodeScanner.OnDetectedEventArg e)
+        private async void CameraView_OnDetected(object sender, GoogleVisionBarCodeScanner.OnBarcodeDetectedEventArg e)
         {
             List<GoogleVisionBarCodeScanner.BarcodeResult> obj = e.BarcodeResults;
 
             string result = string.Empty;
             for(int i = 0; i < obj.Count; i++)
             {
-                result += $"Type : {obj[i].BarcodeType}, Value : {obj[i].DisplayValue}{Environment.NewLine}";
+                result += $"Type : {obj[i].BarcodeType}, Value : {obj[i].Value}{Environment.NewLine}";
             }
             Device.BeginInvokeOnMainThread(async() =>
             {
