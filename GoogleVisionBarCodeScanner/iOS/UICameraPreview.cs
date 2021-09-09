@@ -139,7 +139,7 @@ namespace GoogleVisionBarCodeScanner
 
 
             captureVideoDelegate = new CaptureVideoDelegate(vibrationOnDetected);
-            captureVideoDelegate.OnDetected += (list) =>
+            captureVideoDelegate.OnBarcodeDetected += (list) =>
             {
                 InvokeOnMainThread(() => {
                     //CaptureSession.StopRunning();
@@ -163,8 +163,10 @@ namespace GoogleVisionBarCodeScanner
 
         public class CaptureVideoDelegate : AVCaptureVideoDataOutputSampleBufferDelegate
         {
-            public event Action<List<BarcodeResult>> OnDetected;
+            public event Action<List<BarcodeResult>> OnBarcodeDetected;
+            public event Action<List<TextResult>> OnTextDetected;
             VisionBarcodeDetector barcodeDetector;
+            VisionTextRecognizer textDetector;
             VisionImageMetadata metadata;
             VisionApi vision;
             bool _vibrationOnDetected = true;
@@ -181,6 +183,7 @@ namespace GoogleVisionBarCodeScanner
                 metadata = new VisionImageMetadata();
                 vision = VisionApi.Create();
                 barcodeDetector = vision.GetBarcodeDetector(Configuration.BarcodeDetectorSupportFormat);
+                textDetector = vision.GetOnDeviceTextRecognizer();
                 // Using back-facing camera
                 var devicePosition = AVCaptureDevicePosition.Back;
                 var deviceOrientation = UIDevice.CurrentDevice.Orientation;
@@ -308,7 +311,45 @@ namespace GoogleVisionBarCodeScanner
                                 Points = points.Select(p => (p.X / (double)Width, p.Y / (double)Height)).ToList()
                             });
                         }
-                        OnDetected?.Invoke(resultList);
+                        OnBarcodeDetected?.Invoke(resultList);
+                    }
+                    catch (Exception exception)
+                    {
+                        System.Diagnostics.Debug.WriteLine(exception.Message);
+                    }
+                }
+
+
+            }
+            private async void DetectTextActionAsync(VisionImage image)
+            {
+                if (Configuration.IsScanning)
+                {
+                    try
+                    {
+                        VisionText processed = await textDetector.ProcessImageAsync(image);
+                        var blocks = processed.Blocks;
+                        if (blocks == null || blocks.Length == 0)
+                        {
+                            return;
+                        }
+                        Console.WriteLine($"Successfully read text");
+                        Configuration.IsScanning = false;
+                        if (_vibrationOnDetected)
+                            SystemSound.Vibrate.PlayAlertSound();
+                        var resultList = new List<TextResult>();
+
+                        foreach (var textBlock in blocks)
+                        {
+                            var points = textBlock.CornerPoints.ToList().ConvertAll(nsvalue => nsvalue.PointFValue);
+
+                            resultList.Add(new TextResult
+                            {
+                                Value = textBlock.Text,
+                                Points = points.Select(p => (p.X / (double)Width, p.Y / (double)Height)).ToList()
+                            });
+                        }
+                        OnTextDetected?.Invoke(resultList);
                     }
                     catch (Exception exception)
                     {
