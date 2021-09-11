@@ -45,7 +45,7 @@ namespace SampleApp
             Device.BeginInvokeOnMainThread(async() =>
             {
                 await DisplayAlert("Result", result, "OK");
-                GoogleVisionBarCodeScanner.Methods.SetIsScanning(true);
+                GoogleVisionBarCodeScanner.Methods.SetIsBarcodeScanning(true);
                 //await Navigation.PopModalAsync();
             });
             

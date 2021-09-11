@@ -11,7 +11,11 @@ namespace GoogleVisionBarCodeScanner
 {
     public class Methods 
     {
-        public static void SetIsScanning(bool isScanning)
+        public static void SetIsBarcodeScanning(bool isScanning)
+        {
+            throw new NotImplementedException();
+        }
+        public static void SetIsTextScanning(bool isScanning)
         {
             throw new NotImplementedException();
         }

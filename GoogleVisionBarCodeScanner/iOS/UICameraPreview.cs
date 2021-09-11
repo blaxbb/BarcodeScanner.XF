@@ -101,7 +101,7 @@ namespace GoogleVisionBarCodeScanner
         }
         void Initialize(bool defaultTorchOn, bool vibrationOnDetected, bool startScanningOnCreate)
         {
-            Configuration.IsScanning = startScanningOnCreate;
+            Configuration.IsBarcodeScanning = startScanningOnCreate;
             CaptureSession = new AVCaptureSession();
             CaptureSession.BeginConfiguration();
             this.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
@@ -263,7 +263,7 @@ namespace GoogleVisionBarCodeScanner
             public override void DidOutputSampleBuffer(AVCaptureOutput captureOutput, CMSampleBuffer sampleBuffer, AVCaptureConnection connection)
             {
                 lastRunTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                if (lastRunTime - lastAnalysisTime > scanIntervalInMs && Configuration.IsScanning)
+                if (lastRunTime - lastAnalysisTime > scanIntervalInMs && Configuration.IsBarcodeScanning)
                 {
                     lastAnalysisTime = lastRunTime;
                     try
@@ -285,7 +285,7 @@ namespace GoogleVisionBarCodeScanner
             }
             private async void DetectBarcodeActionAsync(VisionImage image)
             {
-                if (Configuration.IsScanning)
+                if (Configuration.IsBarcodeScanning)
                 {
                     try
                     {
@@ -295,7 +295,7 @@ namespace GoogleVisionBarCodeScanner
                             return;
                         }
                         Console.WriteLine($"Successfully read barcode");
-                        Configuration.IsScanning = false;
+                        Configuration.IsBarcodeScanning = false;
                         if (_vibrationOnDetected)
                             SystemSound.Vibrate.PlayAlertSound();
                         List<BarcodeResult> resultList = new List<BarcodeResult>();
@@ -323,7 +323,7 @@ namespace GoogleVisionBarCodeScanner
             }
             private async void DetectTextActionAsync(VisionImage image)
             {
-                if (Configuration.IsScanning)
+                if (Configuration.IsTextScanning)
                 {
                     try
                     {
@@ -334,7 +334,7 @@ namespace GoogleVisionBarCodeScanner
                             return;
                         }
                         Console.WriteLine($"Successfully read text");
-                        Configuration.IsScanning = false;
+                        Configuration.IsTextScanning = false;
                         if (_vibrationOnDetected)
                             SystemSound.Vibrate.PlayAlertSound();
                         var resultList = new List<TextResult>();

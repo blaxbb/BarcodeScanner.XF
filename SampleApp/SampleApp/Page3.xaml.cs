@@ -52,7 +52,7 @@ namespace SampleApp
         }
         private void StartScanningButton_Clicked(object sender, EventArgs e)
         {
-            GoogleVisionBarCodeScanner.Methods.SetIsScanning(true);
+            GoogleVisionBarCodeScanner.Methods.SetIsBarcodeScanning(true);
         }
     }
 }

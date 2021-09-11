@@ -19,7 +19,8 @@ namespace GoogleVisionBarCodeScanner
              Android.Gms.Vision.Barcodes.BarcodeFormat.Code39 | Android.Gms.Vision.Barcodes.BarcodeFormat.Code93 | Android.Gms.Vision.Barcodes.BarcodeFormat.DataMatrix |
              Android.Gms.Vision.Barcodes.BarcodeFormat.Ean13 | Android.Gms.Vision.Barcodes.BarcodeFormat.Ean8 | Android.Gms.Vision.Barcodes.BarcodeFormat.Itf |
              Android.Gms.Vision.Barcodes.BarcodeFormat.Pdf417 | Android.Gms.Vision.Barcodes.BarcodeFormat.QrCode | Android.Gms.Vision.Barcodes.BarcodeFormat.UpcA | Android.Gms.Vision.Barcodes.BarcodeFormat.UpcE;
-        internal static bool IsScanning = true;
+        internal static bool IsBarcodeScanning = true;
+        internal static bool IsTextScanning = true;
         internal static CameraSource CameraSource;
     }
 }

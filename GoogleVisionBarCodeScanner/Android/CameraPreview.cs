@@ -35,7 +35,7 @@ namespace GoogleVisionBarCodeScanner
         public CameraPreview(Context context, bool defaultTorchOn, bool virbationOnDetected, bool startScanningOnCreate, float? requestedFPS)
             : base(context)
         {
-            Configuration.IsScanning = startScanningOnCreate;
+            Configuration.IsBarcodeScanning = startScanningOnCreate;
             _windowManager = Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>();
             _barcodeDetector = new BarcodeDetector.Builder(context)
                .SetBarcodeFormats(Configuration.BarcodeFormats)
@@ -186,9 +186,9 @@ namespace GoogleVisionBarCodeScanner
                 var qrcodes = detections.DetectedItems;
                 if (qrcodes.Size() != 0)
                 {
-                    if (Configuration.IsScanning)
+                    if (Configuration.IsBarcodeScanning)
                     {
-                        Configuration.IsScanning = false;
+                        Configuration.IsBarcodeScanning = false;
                         if (_vibrationOnDetected)
                         {
                             Vibrator vib = (Vibrator)_context.GetSystemService(Context.VibratorService);
@@ -236,9 +236,9 @@ namespace GoogleVisionBarCodeScanner
                 var textBlocks = detections.DetectedItems;
                 if (textBlocks.Size() != 0)
                 {
-                    if (Configuration.IsScanning)
+                    if (Configuration.IsTextScanning)
                     {
-                        Configuration.IsScanning = false;
+                        Configuration.IsTextScanning = false;
                         if (_vibrationOnDetected)
                         {
                             Vibrator vib = (Vibrator)_context.GetSystemService(Context.VibratorService);
@@ -253,7 +253,12 @@ namespace GoogleVisionBarCodeScanner
                             results.Add(new TextResult
                             {
                                 Value = block.Value,
-                                Points = new List<(double x, double y)>() { (block.BoundingBox.CenterX() / (double)detections.FrameMetadata.Width, block.BoundingBox.CenterY() / (double)detections.FrameMetadata.Height), }
+                                Points = new List<(double x, double y)>() {
+                                    (block.BoundingBox.Left / (double)detections.FrameMetadata.Width, block.BoundingBox.Top / (double)detections.FrameMetadata.Height),
+                                    (block.BoundingBox.Right / (double)detections.FrameMetadata.Width, block.BoundingBox.Top / (double)detections.FrameMetadata.Height),
+                                    (block.BoundingBox.Right / (double)detections.FrameMetadata.Width, block.BoundingBox.Bottom / (double)detections.FrameMetadata.Height),
+                                    (block.BoundingBox.Left / (double)detections.FrameMetadata.Width, block.BoundingBox.Bottom / (double)detections.FrameMetadata.Height)
+                                }
                             });
                         }
                         OnDetected?.Invoke(results);

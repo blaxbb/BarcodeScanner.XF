@@ -83,7 +83,7 @@ namespace SampleApp
 
         private async void CameraView_OnBarcodeDetected(object sender, GoogleVisionBarCodeScanner.OnBarcodeDetectedEventArg e)
         {
-            Device.BeginInvokeOnMainThread(() => GoogleVisionBarCodeScanner.Methods.SetIsScanning(true));
+            Device.BeginInvokeOnMainThread(() => GoogleVisionBarCodeScanner.Methods.SetIsBarcodeScanning(true));
 
             List<GoogleVisionBarCodeScanner.BarcodeResult> barcodes = e.BarcodeResults;
 
@@ -190,7 +190,7 @@ namespace SampleApp
 
         private async void CameraView_OnTextDetected(object sender, OnTextDetectedEventArg e)
         {
-            Device.BeginInvokeOnMainThread(() => GoogleVisionBarCodeScanner.Methods.SetIsScanning(true));
+            Device.BeginInvokeOnMainThread(() => GoogleVisionBarCodeScanner.Methods.SetIsTextScanning(true));
 
             List<GoogleVisionBarCodeScanner.TextResult> barcodes = e.TextResults;
 

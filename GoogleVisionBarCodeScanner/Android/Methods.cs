@@ -100,14 +100,19 @@ namespace GoogleVisionBarCodeScanner
             return formats;
         }
         #region Public Methods
-        public static void SetIsScanning(bool isScanning)
+        public static void SetIsBarcodeScanning(bool isScanning)
         {
-            Configuration.IsScanning = isScanning;
+            Configuration.IsBarcodeScanning = isScanning;
+        }
+
+        public static void SetIsTextScanning(bool isScanning)
+        {
+            Configuration.IsTextScanning = isScanning;
         }
 
         public static void Reset()
         {
-            Configuration.IsScanning = true;
+            Configuration.IsBarcodeScanning = true;
         }
 
 
